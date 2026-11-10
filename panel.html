@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#4d6bfe" />
+<title>Panel de quejas · Gean Franco</title>
+<style>
+  :root{
+    --azul:#4d6bfe;
+    --azul-oscuro:#3550e0;
+    --tinta:#0d0d0d;
+    --gris:#6b7280;
+    --borde:#e5e5e5;
+    --fondo:#f7f8fb;
+    --alta:#d93025;
+    --alta-bg:#fdecea;
+    --alta-borde:#f5c9c4;
+    --media:#b26a00;
+    --media-bg:#fff4e5;
+    --media-borde:#f2ddb8;
+    --baja:#1a7f37;
+    --baja-bg:#e8f5ec;
+    --baja-borde:#c6e6cf;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    background:var(--fondo);
+    color:var(--tinta);
+    -webkit-font-smoothing:antialiased;
+    line-height:1.5;
+    padding:16px 14px 48px;
+    padding-bottom:calc(48px + env(safe-area-inset-bottom));
+    max-width:760px;
+    margin:0 auto;
+  }
+  header.tope{padding:8px 4px 18px}
+  .fila-marca{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:14px;
+    flex-wrap:wrap;
+  }
+  .marca{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    color:var(--azul);
+    background:#eef1ff;
+    border-radius:999px;
+    padding:6px 12px;
+  }
+  .marca .punto{width:7px;height:7px;border-radius:50%;background:var(--azul)}
+  .link-volver{
+    font-size:13.5px;
+    font-weight:600;
+    color:var(--azul);
+    text-decoration:none;
+    padding:8px 14px;
+    border-radius:10px;
+    border:1px solid var(--borde);
+    background:#fff;
+  }
+  .link-volver:active{background:#f2f4ff}
+  h1{font-size:25px;line-height:1.2;margin:0 0 6px;letter-spacing:-.02em}
+  .bajada{margin:0;color:var(--gris);font-size:14.5px}
+  .resumen{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:8px;
+    margin:18px 0 20px;
+  }
+  .stat{
+    background:#fff;
+    border:1px solid var(--borde);
+    border-radius:14px;
+    padding:12px 10px;
+    text-align:center;
+  }
+  .stat .num{
+    display:block;
+    font-size:22px;
+    font-weight:700;
+    font-variant-numeric:tabular-nums;
+    line-height:1.1;
+  }
+  .stat .eti{
+    display:block;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--gris);
+    margin-top:4px;
+  }
+  .stat.alta{border-color:var(--alta-borde);background:var(--alta-bg)}
+  .stat.alta .num{color:var(--alta)}
+  .stat.media{border-color:var(--media-borde);background:var(--media-bg)}
+  .stat.media .num{color:var(--media)}
+  .stat.baja{border-color:var(--baja-borde);background:var(--baja-bg)}
+  .stat.baja .num{color:var(--baja)}
+  .barra{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:14px;
+    flex-wrap:wrap;
+  }
+  .actualizado{font-size:12.5px;color:var(--gris)}
+  button.refrescar{
+    border:1px solid var(--borde);
+    background:#fff;
+    color:var(--azul);
+    font-family:inherit;
+    font-size:13.5px;
+    font-weight:600;
+    padding:9px 16px;
+    border-radius:10px;
+    cursor:pointer;
+  }
+  button.refrescar:active{background:#f2f4ff}
+  button.refrescar:disabled{color:#a8aebb;cursor:not-allowed}
+  section.grupo{margin-bottom:26px}
+  .titulo-grupo{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    margin:0 0 10px;
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+  }
+  .titulo-grupo .punto{width:9px;height:9px;border-radius:50%}
+  .titulo-grupo .cuenta{
+    font-size:11.5px;
+    font-weight:700;
+    letter-spacing:0;
+    padding:1px 8px;
+    border-radius:999px;
+    background:#fff;
+    border:1px solid var(--borde);
+    color:var(--gris);
+    text-transform:none;
+  }
+  .grupo.alta .titulo-grupo{color:var(--alta)}
+  .grupo.alta .punto{background:var(--alta)}
+  .grupo.media .titulo-grupo{color:var(--media)}
+  .grupo.media .punto{background:var(--media)}
+  .grupo.baja .titulo-grupo{color:var(--baja)}
+  .grupo.baja .punto{background:var(--baja)}
+  .queja{
+    background:#fff;
+    border:1px solid var(--borde);
+    border-left-width:4px;
+    border-radius:12px;
+    padding:13px 14px;
+    margin-bottom:9px;
+    box-shadow:0 1px 2px rgba(13,13,13,.03);
+  }
+  .grupo.alta .queja{border-left-color:var(--alta)}
+  .grupo.media .queja{border-left-color:var(--media)}
+  .grupo.baja .queja{border-left-color:var(--baja)}
+  .queja .texto{
+    margin:0 0 9px;
+    font-size:15px;
+    white-space:pre-wrap;
+    word-wrap:break-word;
+    overflow-wrap:anywhere;
+  }
+  .queja .meta{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+    font-size:12px;
+    color:var(--gris);
+  }
+  .etiqueta{
+    display:inline-block;
+    padding:2px 9px;
+    border-radius:999px;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    background:#eef1ff;
+    color:var(--azul-oscuro);
+  }
+  .vacio{
+    background:#fff;
+    border:1px dashed var(--borde);
+    border-radius:12px;
+    padding:16px;
+    text-align:center;
+    font-size:13.5px;
+    color:#9aa1ae;
+  }
+  .cargando{
+    text-align:center;
+    padding:40px 16px;
+    color:var(--gris);
+    font-size:14px;
+  }
+  .aviso-error{
+    display:none;
+    background:var(--alta-bg);
+    border:1px solid var(--alta-borde);
+    color:#7a1a12;
+    border-radius:12px;
+    padding:14px;
+    font-size:14px;
+    margin-bottom:16px;
+    overflow-wrap:anywhere;
+  }
+  .aviso-error.visible{display:block}
+</style>
+</head>
+<body>
+
+<header class="tope">
+  <div class="fila-marca">
+    <div class="marca"><span class="punto"></span>Gean Franco</div>
+    <a class="link-volver" href="index.html">← Enviar queja</a>
+  </div>
+  <h1>Panel de quejas</h1>
+  <p class="bajada">Ordenadas por prioridad (alta → media → baja) y, dentro de cada grupo, de la más reciente a la más antigua.</p>
+</header>
+
+<main>
+  <div class="resumen" id="resumen">
+    <div class="stat alta"><span class="num" id="cuenta-alta">–</span><span class="eti">Alta</span></div>
+    <div class="stat media"><span class="num" id="cuenta-media">–</span><span class="eti">Media</span></div>
+    <div class="stat baja"><span class="num" id="cuenta-baja">–</span><span class="eti">Baja</span></div>
+  </div>
+
+  <div class="barra">
+    <span class="actualizado" id="actualizado">Cargando…</span>
+    <button class="refrescar" id="btn-refrescar" type="button">Actualizar</button>
+  </div>
+
+  <div class="aviso-error" id="aviso-error" role="alert"></div>
+
+  <div id="cargando" class="cargando">Cargando quejas…</div>
+
+  <div id="listado">
+    <section class="grupo alta">
+      <h2 class="titulo-grupo"><span class="punto"></span>Prioridad alta <span class="cuenta" id="cuenta-titulo-alta">0</span></h2>
+      <div id="lista-alta"></div>
+    </section>
+
+    <section class="grupo media">
+      <h2 class="titulo-grupo"><span class="punto"></span>Prioridad media <span class="cuenta" id="cuenta-titulo-media">0</span></h2>
+      <div id="lista-media"></div>
+    </section>
+
+    <section class="grupo baja">
+      <h2 class="titulo-grupo"><span class="punto"></span>Prioridad baja <span class="cuenta" id="cuenta-titulo-baja">0</span></h2>
+      <div id="lista-baja"></div>
+    </section>
+  </div>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  var ORDEN = ["alta", "media", "baja"];
+  var VACIOS = {
+    alta: "No hay quejas de prioridad alta.",
+    media: "No hay quejas de prioridad media.",
+    baja: "No hay quejas de prioridad baja."
+  };
+
+  var contenedores = {
+    alta: document.getElementById("lista-alta"),
+    media: document.getElementById("lista-media"),
+    baja: document.getElementById("lista-baja")
+  };
+  var contadores = {
+    alta: document.getElementById("cuenta-alta"),
+    media: document.getElementById("cuenta-media"),
+    baja: document.getElementById("cuenta-baja")
+  };
+  var titulos = {
+    alta: document.getElementById("cuenta-titulo-alta"),
+    media: document.getElementById("cuenta-titulo-media"),
+    baja: document.getElementById("cuenta-titulo-baja")
+  };
+  var cargando = document.getElementById("cargando");
+  var listado = document.getElementById("listado");
+  var avisoError = document.getElementById("aviso-error");
+  var actualizado = document.getElementById("actualizado");
+  var boton = document.getElementById("btn-refrescar");
+
+  function escaparHtml(str) {
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function formatearFecha(valor) {
+    if (!valor) return "Sin fecha";
+    var texto = String(valor).trim();
+    var iso = texto.indexOf("T") === -1
+      ? texto.replace(" ", "T") + "Z"
+      : (/(Z|[+-]\d{2}:?\d{2})$/.test(texto) ? texto : texto + "Z");
+    var fecha = new Date(iso);
+    if (isNaN(fecha.getTime())) return texto;
+    try {
+      return fecha.toLocaleString("es-AR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    } catch (e) {
+      return fecha.toISOString();
+    }
+  }
+
+  function normalizarPrioridad(valor) {
+    var p = String(valor || "").toLowerCase().trim();
+    return ORDEN.indexOf(p) !== -1 ? p : "media";
+  }
+
+  function crearTarjeta(queja) {
+    var texto = escaparHtml(queja.texto || "");
+    var categoria = escaparHtml(queja.categoria || "Otro");
+    var fecha = escaparHtml(formatearFecha(queja.creada));
+    var prioridad = normalizarPrioridad(queja.prioridad);
+
+    var articulo = document.createElement("article");
+    articulo.className = "queja";
+    articulo.innerHTML =
+      '<p class="texto">' + texto + "</p>" +
+      '<div class="meta">' +
+        '<span class="etiqueta">' + categoria + "</span>" +
+        "<span>" + fecha + "</span>" +
+        '<span class="pill ' + prioridad + '">' + prioridad + "</span>" +
+      "</div>";
+    return articulo;
+  }
+
+  function pintar(quejas) {
+    var grupos = { alta: [], media: [], baja: [] };
+
+    (quejas || []).forEach(function (queja) {
+      var p = normalizarPrioridad(queja && queja.prioridad);
+      grupos[p].push(queja);
+    });
+
+    ORDEN.forEach(function (p) {
+      var contenedor = contenedores[p];
+      var lista = grupos[p];
+
+      contenedor.innerHTML = "";
+
+      if (lista.length === 0) {
+        var vacio = document.createElement("div");
+        vacio.className = "vacio";
+        vacio.textContent = VACIOS[p];
+        contenedor.appendChild(vacio);
+      } else {
+        lista.forEach(function (queja) {
+          contenedor.appendChild(crearTarjeta(queja));
+        });
+      }
+
+      contadores[p].textContent = String(lista.length);
+      titulos[p].textContent = String(lista.length);
+    });
+
+    cargando.style.display = "none";
+    listado.style.display = "";
+  }
+
+  function mostrarError(mensaje) {
+    avisoError.textContent = mensaje;
+    avisoError.classList.add("visible");
+  }
+
+  function limpiarError() {
+    avisoError.textContent = "";
+    avisoError.classList.remove("visible");
+  }
+
+  function cargar() {
+    boton.disabled = true;
+    boton.textContent = "Actualizando…";
+    limpiarError();
+
+    fetch("/api/quejas", { headers: { Accept: "application/json" } })
+      .then(function (respuesta) {
+        return respuesta.json().catch(function () {
+          return { ok: false, error: "El servidor devolvió una respuesta inválida (no es JSON)." };
+        }).then(function (datos) {
+          return { estado: respuesta.status, datos: datos };
+        });
+      })
+      .then(function (resultado) {
+        var datos = resultado.datos || {};
+        if (resultado.estado >= 200 && resultado.estado < 300 && datos.ok) {
+          pintar(datos.quejas);
+          actualizado.textContent = "Actualizado: " + formatearFecha(new Date().toISOString());
+        } else {
+          cargando.style.display = "none";
+          listado.style.display = "";
+          ORDEN.forEach(function (p) {
+            contadores[p].textContent = "–";
+            titulos[p].textContent = "0";
+            contenedores[p].innerHTML = '<div class="vacio">Sin datos disponibles.</div>';
+          });
+          mostrarError(datos.error || "No pudimos cargar las quejas.");
+          actualizado.textContent = "Error al actualizar";
+        }
+      })
+      .catch(function () {
+        cargando.style.display = "none";
+        listado.style.display = "";
+        ORDEN.forEach(function (p) {
+          contenedores[p].innerHTML = '<div class="vacio">Sin conexión.</div>';
+        });
+        mostrarError("No pudimos conectar con el servidor. Revisá tu conexión.");
+        actualizado.textContent = "Sin conexión";
+      })
+      .then(function () {
+        boton.disabled = false;
+        boton.textContent = "Actualizar";
+      });
+  }
+
+  boton.addEventListener("click", cargar);
+  cargar();
+})();
+</script>
+</body>
+</html>
